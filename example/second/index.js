@@ -125,7 +125,7 @@ function cycle(pixels) {
             match = findClosestPixel(pixels, pixel);
             if (match) {
                 if (movePixel(match, pixel)) {
-                    pixel.join(match);
+                    pixel.attach(match);
                 }
             }
         }
@@ -138,6 +138,9 @@ function paint(arena, pixels, current) {
         x, y,
         pX, pY;
 
+    /*
+     * For each pixel if it within the arena draw it.
+     */
     for (pixel in pixels) {
         pX = pixels[pixel].space.x;
         pY = pixels[pixel].space.y;
@@ -147,6 +150,9 @@ function paint(arena, pixels, current) {
         }
     }
 
+    /*
+     * Now paint the frame
+     */
     for (y = 0; y < arena.length; y = y + 1) {
         frame = frame = frame + '\n';
         for (x = 0; x < arena[y].length; x = x + 1) {
@@ -163,17 +169,10 @@ function paint(arena, pixels, current) {
  * Ganerate Pixels
  */
 for (var i = 0; i < 20; i++) {
-    pixels.push(Pixel.create(function (x, y) {
-        for (var i in pixels) {
-            if (pixels[i].space.x === x && pixels[i].space.y === y) {
-                return false;
-            }
-            return true;
-        }
-    }));
+    pixels.push(Pixel.create());
 }
 
-pixels[0].find(true);
+pixels[0].program([[0,1,0],[1,1,1],[0,1,0],[0,1,0],[1,1,1]], {x: 1, y: 2});
 
 /*
  * Make the arena
