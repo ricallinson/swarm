@@ -60,8 +60,8 @@ function findClosestPixel(pixels, pixel) {
             toX = current.space.x;
             toY = current.space.y;
 
-            var dx = toX - fromX;
-            var dy = toY - fromY;
+            var dx = fromX - toX;
+            var dy = fromY - toY;
             var dist = Math.sqrt(dx*dx + dy*dy);
 
             if (!currentDist || dist < currentDist) {
@@ -93,13 +93,13 @@ function movePixel(from, to) {
      * If they are not then move them
      */
 
-    if (toX <= fromX) {
+    if (toX < fromX) {
         fromX = fromX - 1;
     } else {
         fromX = fromX + 1;
     }
 
-    if (toY <= fromY) {
+    if (toY < fromY) {
         fromY = fromY - 1;
     } else {
         fromY = fromY + 1;
@@ -121,7 +121,7 @@ function cycle(pixels) {
     
     for (i in pixels) {
         pixel = pixels[i];
-        if (pixel.find()) {
+        if (pixel.want > 0) {
             match = findClosestPixel(pixels, pixel);
             if (match) {
                 if (movePixel(match, pixel)) {
@@ -146,7 +146,7 @@ function paint(arena, pixels, current) {
         pY = pixels[pixel].space.y;
 
         if (arena[pY] && arena[pY][pX] === null) {
-            arena[pY][pX] = pixels[pixel].icon;
+            arena[pY][pX] = pixels[pixel].want.toString();
         }
     }
 
@@ -172,7 +172,7 @@ for (var i = 0; i < 20; i++) {
     pixels.push(Pixel.create());
 }
 
-pixels[0].program([[0,1,0],[1,1,1],[0,1,0],[0,1,0],[1,1,1]], {x: 1, y: 2});
+pixels[0].program([[0,1,0],[1,1,1],[0,1,0],[0,1,0],[1,1,1],[0,1,0]], {x: 1, y: 0});
 
 /*
  * Make the arena
@@ -181,11 +181,13 @@ arena = makeArena(30, 30);
 
 addPixelsToArena(pixels, arena);
 
+paint(makeArena(30, 30), pixels, 0);
+
 var id = setInterval(function () {
     if (counter >= 400) {
         clearInterval(id);
     }
-    paint(makeArena(30, 30), pixels, counter);
     cycle(pixels);
+    paint(makeArena(30, 30), pixels, counter);
     counter = counter + 1;
-}, 20);
+}, 200);
